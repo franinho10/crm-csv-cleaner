@@ -12,7 +12,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "Francisco Oliver Mora" }]
 requires-python = ">=3.11"
 dependencies = [
-    "pandas>=2.2,<4",
+    "pandas>=3.0,<4",
     "openpyxl~=3.1",
     "PyYAML~=6.0",
     "phonenumbers>=8.13",

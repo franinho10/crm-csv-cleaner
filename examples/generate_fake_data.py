@@ -9,19 +9,21 @@ PRIVACIDAD
 - Nombres: combinaciones aleatorias de listas inventadas a mano.
 tests/test_privacy.py falla si algo en examples/ se sale de estas reglas.
 
-Uso: python examples/generate_fake_data.py   (semilla fija: la salida es reproducible)
+Uso: python examples/generate_fake_data.py
+(requiere `pip install -e .`; semilla fija: la salida es reproducible)
 """
 
 import csv
 import random
 import re
-import unicodedata
 import zipfile
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from openpyxl import Workbook
+
+from crm_csv_cleaner.normalize import fold, sort_key
 
 SEED = 42
 N_PEOPLE = 40
@@ -94,8 +96,7 @@ class Person:
 
 
 def slug(text: str) -> str:
-    ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
-    return ascii_text.lower().replace(" ", "")
+    return fold(text).replace(" ", "")
 
 
 def fake_phone(suffix: int) -> str:
@@ -341,7 +342,7 @@ def expected_output(people: list[Person]) -> list[dict]:
                 "apariciones": len(p.visits),
             }
         )
-    return sorted(out, key=lambda r: (r["Last Name"], r["First Name"], r["Email"]))
+    return sorted(out, key=lambda r: sort_key(r["Last Name"], r["First Name"], r["Email"]))
 
 
 def main() -> None:
