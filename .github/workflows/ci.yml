@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
@@ -13,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.13"]
+        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,4 +33,10 @@ jobs:
         # Su contenido ya lo validan los tests end-to-end.
         run: |
           python examples/generate_fake_data.py
-          git diff --exit-code -- examples ':(exclude)examples/input/*.xlsx'
+          # git status --porcelain también detecta archivos nuevos sin rastrear.
+          changes="$(git status --porcelain -- examples ':(exclude)examples/input/*.xlsx')"
+          if [ -n "$changes" ]; then
+            echo "Los ejemplos no coinciden con el generador; regenéralos y haz commit:"
+            git status -- examples
+            exit 1
+          fi

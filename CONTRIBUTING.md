@@ -40,4 +40,4 @@ Añade casos a `tests/test_normalize.py` y documenta el nuevo comportamiento en 
 
 - Código y comentarios en el estilo del resto del repo (mensajes al usuario en español).
 - Funciones puras y pequeñas donde se pueda; los normalizadores devuelven el valor limpio o `None`.
-- Mensajes de commit breves en imperativo, por ejemplo: `feat: separar nombres compuestos`.
+- Mensajes de commit breves con prefijo de tipo y una descripción nominal, como en el historial; por ejemplo: `feat: separación de nombres compuestos`.
