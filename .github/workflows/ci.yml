@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Instalar
+        run: python -m pip install -e ".[dev]"
+      - name: Formato (ruff)
+        run: ruff format --check .
+      - name: Lint (ruff)
+        run: ruff check .
+      - name: Tests (pytest)
+        run: pytest
+      - name: Ejemplos sincronizados con el generador
+        # El .xlsx se excluye: su compresión puede variar con la versión de zlib del sistema.
+        # Su contenido ya lo validan los tests end-to-end.
+        run: |
+          python examples/generate_fake_data.py
+          git diff --exit-code -- examples ':(exclude)examples/input/*.xlsx'

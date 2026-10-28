@@ -19,10 +19,25 @@ dependencies = [
 ]
 keywords = ["csv", "crm", "deduplicate", "gohighlevel", "hubspot", "airtable"]
 classifiers = [
+    "Development Status :: 3 - Alpha",
     "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: Spanish",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business",
     "Topic :: Utilities",
 ]
+
+# PLACEHOLDER: sustituye CAMBIAR-USUARIO por el usuario u organización real antes de publicar.
+[project.urls]
+Homepage = "https://github.com/CAMBIAR-USUARIO/crm-csv-cleaner"
+Issues = "https://github.com/CAMBIAR-USUARIO/crm-csv-cleaner/issues"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "ruff>=0.6"]
