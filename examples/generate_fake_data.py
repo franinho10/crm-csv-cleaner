@@ -338,7 +338,7 @@ def expected_output(people: list[Person]) -> list[dict]:
                 "Email": email,
                 "Phone": f"+34{p.phone}" if p.phone else "",
                 "Date": max(dates).isoformat() if dates else "",
-                "source_files": "|".join(sorted({f for f, _, _ in p.visits})),
+                "source_files": "|".join(sorted({f for f, _, _ in p.visits}, key=sort_key)),
                 "apariciones": len(p.visits),
             }
         )
