@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Entorno / secretos
+.env
+.env.*
+*.pem
+*.key
+
+# Sistema / editores / herramientas locales
+.DS_Store
+.idea/
+.vscode/
+.claude/
+
+# Protección de datos reales: ningún CSV/Excel fuera de examples/
+*.csv
+*.xlsx
+*.xls
+!examples/**/*.csv
+!examples/**/*.xlsx
+data/
