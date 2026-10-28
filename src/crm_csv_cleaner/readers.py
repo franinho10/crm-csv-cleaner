@@ -1,6 +1,7 @@
 """Lectura de CSV y Excel. Todo se lee como texto para no perder ceros ni formatos."""
 
 import io
+import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -27,10 +28,15 @@ class Table:
 def read_table(path: Path) -> Table:
     path = Path(path)
     suffix = path.suffix.lower()
-    if suffix in CSV_SUFFIXES:
-        return _read_csv(path)
-    if suffix in EXCEL_SUFFIXES:
-        return _read_excel(path)
+    if suffix in CSV_SUFFIXES | EXCEL_SUFFIXES:
+        reader = _read_csv if suffix in CSV_SUFFIXES else _read_excel
+        try:
+            return reader(path)
+        except FileNotFoundError as exc:
+            raise ReaderError(f"{path}: el archivo no existe") from exc
+        except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:
+            # pandas/openpyxl: CSV mal formado, archivo vacío, xlsx corrupto, sin permisos...
+            raise ReaderError(f"{path.name}: no se pudo leer ({exc})") from exc
     if suffix == ".xls":
         raise ReaderError(f"{path.name}: formato .xls no soportado; guárdalo como .xlsx o .csv")
     raise ReaderError(f"{path.name}: extensión no soportada ({suffix or 'sin extensión'})")

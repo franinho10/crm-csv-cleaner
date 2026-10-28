@@ -1,5 +1,6 @@
 """Informe del proceso. Teléfonos y emails siempre enmascarados al mostrarlos."""
 
+import dataclasses
 from dataclasses import asdict, dataclass, field
 
 MASK = "•"
@@ -41,6 +42,10 @@ class RowIssue:
     reason: str
     field: str = ""
     value: str = ""
+    # `field` es un atributo de esta clase: hay que usar dataclasses.field explícitamente.
+    raw: dict[str, str] = dataclasses.field(
+        default_factory=dict, repr=False
+    )  # fila original (--rejects)
 
     def shown_value(self) -> str:
         return mask_contact(self.value) if self.field in CONTACT_FIELDS else self.value
@@ -50,7 +55,7 @@ class RowIssue:
 class DoubtfulMerge:
     names: list[str]
     files: list[str]
-    keys: list[str]  # claves compartidas, ya enmascaradas
+    keys: list[str]  # todas las claves del grupo (teléfonos y emails), ya enmascaradas
 
 
 @dataclass
@@ -70,6 +75,7 @@ class Report:
         for key in ("discarded", "warnings"):
             for issue, raw in zip(data[key], getattr(self, key), strict=True):
                 issue["value"] = raw.shown_value()
+                del issue["raw"]  # los datos originales solo van a --rejects
         return data
 
     def format_text(self) -> str:

@@ -2,9 +2,9 @@
 
 Herramienta de línea de comandos que toma varios CSV/Excel desordenados de reservas o contactos y produce **un único CSV limpio** listo para importar a un CRM (GoHighLevel, HubSpot, Airtable).
 
-> 🚧 En desarrollo (MVP). El pipeline ya funciona como librería; la CLI llega en la siguiente versión.
+> 🚧 MVP en desarrollo.
 
-## Qué hará
+## Qué hace
 
 - Unir varios archivos con columnas distintas mediante un mapeo configurable (YAML).
 - Normalizar teléfonos (formato internacional E.164, España por defecto) y emails.
@@ -23,12 +23,35 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+## Uso
+
+```bash
+crm-csv-cleaner examples/input -c examples/mapping.yaml -o limpio.csv \
+    --rejects rechazados.csv --report informe.json
+```
+
+| Opción | Qué hace |
+|---|---|
+| `ARCHIVO...` | CSV/XLSX de entrada, o carpetas (se leen sus CSV/XLSX). |
+| `-c, --config` | Mapeo YAML. Sin él se usan los sinónimos integrados. |
+| `-o, --output` | CSV limpio. Obligatorio salvo con `--dry-run`. |
+| `--rejects` | CSV con las filas descartadas, su motivo y **sus datos originales sin enmascarar**. |
+| `--report` | Informe en JSON, con teléfonos y emails enmascarados. |
+| `--dry-run` | Procesa y muestra el informe sin crear ningún archivo ni carpeta. |
+| `--force` | Permite sobrescribir archivos existentes (por defecto, nunca se sobrescriben). |
+
+> ⚠️ **`--rejects` contiene datos personales completos** (teléfonos y emails sin enmascarar) para que puedas corregirlos. No lo compartas ni lo subas a ningún repositorio.
+
+El informe en consola nunca muestra teléfonos ni emails completos. Códigos de salida: `0` correcto, `1` error de entrada, configuración o escritura, `2` argumentos incorrectos.
+
 ## Datos de ejemplo
 
 `examples/` contiene datos **100 % ficticios** generados por `examples/generate_fake_data.py`:
 
 - Teléfonos solo del bloque `600 000 xxx`. Cualquier móvil español con formato válido podría estar asignado a alguien, así que este bloque se usa para que se note que son datos de prueba. **No llames ni escribas a estos números.**
 - Emails solo en `@example.com` / `@example.org`, dominios reservados para documentación (RFC 2606).
+
+Incluyen casos límite a propósito: duplicados entre archivos y dentro de un mismo archivo, filas vacías o sin contacto, un teléfono y un email inválidos, una fecha imposible, un teléfono guardado como número por Excel y una **fusión dudosa** (dos personas distintas que comparten teléfono). `examples/output/clientes_limpios.csv` es la salida esperada y los tests comprueban que la herramienta la reproduce byte a byte.
 
 ## Reglas de deduplicado
 

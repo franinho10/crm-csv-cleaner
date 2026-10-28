@@ -45,14 +45,26 @@ def test_written_file_is_byte_identical(example_result, tmp_path):
 
 def test_end_to_end_report(example_result):
     r = example_result.report
-    assert (r.rows_read, r.duplicates, r.output_rows) == (66, 20, 43)
+    assert (r.rows_read, r.duplicates, r.output_rows) == (68, 21, 44)
     assert sorted(i.reason for i in r.discarded) == [
         "fila vacía",
         "sin teléfono ni email",
         "teléfono inválido y sin email",
     ]
     assert sorted(i.reason for i in r.warnings) == ["email inválido", "fecha inválida"]
-    assert r.doubtful_merges == []
+    assert [m.names for m in r.doubtful_merges] == [["Sofía Robles Vega", "Héctor Gallardo Rey"]]
+
+
+def test_doubtful_merge_keeps_newest_record(example_result):
+    row = next(r for r in example_result.rows if r["First Name"] == "Héctor")
+    assert (row["Email"], row["Date"], row["apariciones"]) == (
+        "hector.g@example.org",
+        "2025-08-01",
+        "2",
+    )
+    assert not any(
+        r["First Name"] == "Sofía" and r["Last Name"] == "Robles Vega" for r in example_result.rows
+    )
 
 
 def test_output_independent_of_file_order(example_result):

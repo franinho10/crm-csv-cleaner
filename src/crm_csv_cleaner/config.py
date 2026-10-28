@@ -79,6 +79,10 @@ class Config:
 def load_config(path: Path) -> Config:
     try:
         data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise ConfigError(f"{path}: el archivo de configuración no existe") from exc
+    except (OSError, UnicodeDecodeError) as exc:
+        raise ConfigError(f"{path}: no se pudo leer la configuración ({exc})") from exc
     except yaml.YAMLError as exc:
         raise ConfigError(f"{path}: YAML inválido: {exc}") from exc
     return config_from_dict(data or {})

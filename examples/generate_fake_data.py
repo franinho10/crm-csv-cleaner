@@ -277,7 +277,30 @@ def add_edge_cases(rows: dict[str, list[dict]], people: list[Person], suffixes: 
         }
     )
 
-    people.extend([bad_email, bad_date, numeric])
+    # Fusión dudosa: dos personas distintas comparten teléfono (p. ej. un móvil familiar).
+    # La herramienta las fusiona (gana la más reciente) y lo avisa en el informe.
+    shared = Person("Héctor", "Gallardo Rey", fake_phone(suffixes.pop()), "hector.g@example.org")
+    rows[TPV].append(
+        {
+            "first name": "Sofía",
+            "last name": "Robles Vega",
+            "phone": shared.phone,
+            "email": "sofia.r@example.com",
+            "date": "2025-04-01",
+        }
+    )
+    rows[EVENTOS].append(
+        {
+            "Nombre": "Héctor",
+            "Apellidos": "Gallardo Rey",
+            "Tlf": shared.phone,
+            "E-mail": shared.email,
+            "Fecha": datetime(2025, 8, 1),
+        }
+    )
+    shared.visits += [(TPV, date(2025, 4, 1), True), (EVENTOS, date(2025, 8, 1), True)]
+
+    people.extend([bad_email, bad_date, numeric, shared])
     return 3
 
 
@@ -366,6 +389,7 @@ def main() -> None:
     print(f"Personas únicas esperadas: {len(clean)}")
     print(f"Duplicados esperados: {total - discards - len(clean)}")
     print(f"Descartes esperados: {discards}")
+    print("Fusiones dudosas esperadas: 1")
 
 
 if __name__ == "__main__":

@@ -106,6 +106,20 @@ def write_output(result: Result, path: Path) -> None:
         writer.writerows(result.rows)
 
 
+def write_rejects(result: Result, path: Path) -> None:
+    """Filas descartadas con su motivo y sus datos ORIGINALES, sin enmascarar."""
+    discarded = result.report.discarded
+    original = dict.fromkeys(h for issue in discarded for h in issue.raw)
+    columns = ["source_file", "row", "reason", *original]
+    with Path(path).open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=columns)
+        writer.writeheader()
+        for issue in discarded:
+            writer.writerow(
+                {"source_file": issue.file, "row": issue.row, "reason": issue.reason, **issue.raw}
+            )
+
+
 # --- Pasos internos --------------------------------------------------------------------------
 
 
@@ -118,7 +132,7 @@ def _normalize_row(
     report: Report,
 ) -> Record | None:
     if all(is_blank(v) for v in raw.values()):
-        report.discarded.append(RowIssue(source, row, "fila vacía"))
+        report.discarded.append(RowIssue(source, row, "fila vacía", raw=dict(raw)))
         return None
 
     values: dict[str, str] = {}
@@ -150,7 +164,9 @@ def _normalize_row(
             missing = [f"sin {LABELS[f]}" for f in CONTACT_FIELDS if f not in invalid_fields]
             reason = " y ".join([i.reason for i in invalid] + missing)
         shown = invalid[0] if invalid else RowIssue(source, row, "")
-        report.discarded.append(RowIssue(source, row, reason, shown.field, shown.value))
+        report.discarded.append(
+            RowIssue(source, row, reason, shown.field, shown.value, raw=dict(raw))
+        )
         return None
 
     report.warnings += issues
