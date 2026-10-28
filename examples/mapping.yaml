@@ -1,0 +1,26 @@
+# Mapeo de ejemplo para los archivos de examples/input/.
+# Las cabeceras se comparan sin distinguir mayúsculas, tildes ni espacios sobrantes.
+
+default_region: ES
+
+date:
+  dayfirst: true
+
+dedupe:
+  keys: [telefono, email]   # misma persona si coincide cualquiera de las dos
+  recency_field: fecha      # gana el registro con la fecha más reciente
+
+fields:
+  nombre_completo: ["nombre completo", "full name"]   # se parte en nombre + apellidos
+  nombre: ["nombre", "first name"]
+  apellidos: ["apellidos", "last name"]
+  email: ["email", "e-mail", "correo", "correo electronico"]
+  telefono: ["telefono", "movil", "tlf", "phone"]
+  fecha: ["fecha", "f. reserva", "fecha reserva", "date"]
+
+output_columns:
+  nombre: First Name
+  apellidos: Last Name
+  email: Email
+  telefono: Phone
+  fecha: Date
