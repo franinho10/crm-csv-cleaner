@@ -34,10 +34,9 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
-# PLACEHOLDER: sustituye CAMBIAR-USUARIO por el usuario u organización real antes de publicar.
 [project.urls]
-Homepage = "https://github.com/CAMBIAR-USUARIO/crm-csv-cleaner"
-Issues = "https://github.com/CAMBIAR-USUARIO/crm-csv-cleaner/issues"
+Homepage = "https://github.com/franinho10/crm-csv-cleaner"
+Issues = "https://github.com/franinho10/crm-csv-cleaner/issues"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "ruff>=0.6"]
